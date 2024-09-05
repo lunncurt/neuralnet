@@ -3,23 +3,18 @@
 #include <Eigen/Dense>
 #include <vector>
 
-class InputLayer{
-private:
-
+class Neuron {
 public:
+  Neuron(int connections);
 
+private:
+  Eigen::VectorXf weights;
+  double output_val;
 };
 
-class HiddenLayer{
-private:
-
+// Network class to handle network topology creation, training functions, and
+// testing
+class Network {
 public:
-
-};
-
-class OutputLayer{
 private:
-
-public:
-
 };
