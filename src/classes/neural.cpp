@@ -8,7 +8,7 @@ Layer::Layer(int input_size, int output_size, const char type)
     : layer_type(type) {
   // Initialize random weights using mersenne twister into a normal distribution
   std::random_device rd;
-  std::mt19937 gen(rd);
+  std::mt19937 gen(rd());
   std::normal_distribution<> he_dist(0, std::sqrt(2.0 / input_size));
 
   // fill the weights matrix
@@ -52,7 +52,9 @@ Network::Network(const std::vector<int> &topology) {
 }
 
 Eigen::VectorXd Network::forward(const Eigen::VectorXd &input_data){
-  Eigen::VectorXd output = input_data;
+  Eigen::VectorXd output = Eigen::VectorXd(input_data.size());
+
+  output = input_data;
 
   for(auto &layer : layers){
     output = layer.forward(output);

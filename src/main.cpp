@@ -1,30 +1,30 @@
+#include "classes/neural.hpp"
+#include "classes/utils.hpp"
 #include <Eigen/Dense>
 #include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
 
 int main() {
-  // Create a 3x3 matrix and fill it with values
-  Eigen::Matrix3d m;
-  m << 1, 2, 3, 4, 5, 6, 7, 8, 9;
+  std::string fname = "mnist_test.csv";
 
-  Eigen::VectorXi test(30);
+  int amount = 1;
 
-  test(29) = 20;
+  std::vector<Image> test = read(amount, fname);
+  std::vector<int> topology = {400, 10};
 
-  // Print the matrix
-  std::cout << "Matrix m:" << std::endl << m << std::endl;
+  Network t(topology);
 
-  // Create a vector and fill it with values
-  Eigen::Vector3d v(1, 2, 3);
-  v = v.transpose();
+  std::cout << test[0].data.size();
 
-  // Print the vector
-  std::cout << "Vector v:" << std::endl << v << std::endl;
-
-  // Multiply the matrix and vector
-  Eigen::Vector3d result = m * v;
-
-  // Print the result
-  std::cout << "Result of m * v:" << std::endl << result << std::endl;
+//  Eigen::VectorXd output = t.forward(test[0].data);
+//
+//  for(int i = 0; i < 10; i++){
+//    std::cout << output[i];
+//  }
+//
+//  std::cout << std::endl;
 
   return 0;
 }

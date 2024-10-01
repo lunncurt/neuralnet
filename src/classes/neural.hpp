@@ -3,9 +3,11 @@
 #include <Eigen/Dense>
 #include <vector>
 
-struct Values{
+struct Image{
   int label;
   Eigen::VectorXd data;
+
+  Image() : label(0), data(Eigen::VectorXd(784)) {}
 };
 
 class Layer {

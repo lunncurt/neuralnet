@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
 set(SOURCE_FILES
     src/main.cpp
     src/classes/neural.cpp
-    src/classes/visualize.cpp)
+    src/classes/utils.cpp)
 
 add_executable(out ${SOURCE_FILES})
 
