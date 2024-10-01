@@ -19,13 +19,17 @@ Layer::Layer(int input_size, int output_size, const char type)
 
   // Initialize bias vectors based on layer type
   if (layer_type == 'h') {
-    biases = Eigen::VectorXd::Constant(weights.cols(), 0.1);
+    biases = Eigen::VectorXd::Constant(output_size, 0.1);
   } else { // output layer
-    biases = Eigen::VectorXd::Constant(weights.cols(), 0.0);
+    biases = Eigen::VectorXd::Constant(output_size, 0.0);
   }
 }
 
 Eigen::VectorXd Layer::forward(const Eigen::VectorXd &input) {
+  // Check dimensions
+  assert(weights.cols() == input.size() && "Input size does not match the number of columns in weights!");
+  assert(weights.rows() == biases.size() && "Biases size does not match the number of rows in weights!");
+
   // Calculate weighted sum + biases
   Eigen::VectorXd wsum = (weights * input) + biases;
 
@@ -44,7 +48,7 @@ Eigen::VectorXd Layer::forward(const Eigen::VectorXd &input) {
 
 Network::Network(const std::vector<int> &topology) {
   for (size_t i = 1; i < topology.size() - 1; i++) {
-    layers.push_back(Layer(topology[i], topology[i + 1], 'h'));
+    layers.push_back(Layer(topology[i - 1], topology[i], 'h'));
   }
 
   layers.push_back(
@@ -52,13 +56,13 @@ Network::Network(const std::vector<int> &topology) {
 }
 
 Eigen::VectorXd Network::forward(const Eigen::VectorXd &input_data){
-  Eigen::VectorXd output = Eigen::VectorXd(input_data.size());
+  Eigen::VectorXd fpass_out = Eigen::VectorXd(784);
 
-  output = input_data;
+  fpass_out = input_data;
 
   for(auto &layer : layers){
-    output = layer.forward(output);
+    fpass_out = layer.forward(fpass_out);
   }
 
-  return output;
+  return fpass_out;
 }
