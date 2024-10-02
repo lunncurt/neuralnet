@@ -4,27 +4,27 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <fstream>
 
 int main() {
   std::string fname = "mnist_test.csv";
 
-  int amount = 1;
+  int amount = 5;
 
   std::vector<Image> test = read(amount, fname);
-  std::vector<int> topology = {400, 10};
+  std::vector<int> topology = {784, 200, 10};
 
   Network t(topology);
 
-  std::cout << test[0].data.size();
+  for (int i = 0; i < test.size(); i++) {
+    std::cout << "pass number: " << i + 1 << std::endl;
+    Eigen::VectorXd output = t.forward(test[i].data);
 
-//  Eigen::VectorXd output = t.forward(test[0].data);
-//
-//  for(int i = 0; i < 10; i++){
-//    std::cout << output[i];
-//  }
-//
-//  std::cout << std::endl;
+    for (int j = 0; j < 10; j++) {
+      std::cout << output[j] << std::endl;
+    }
+  }
+
+  std::cout << std::endl;
 
   return 0;
 }

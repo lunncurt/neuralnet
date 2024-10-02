@@ -28,7 +28,7 @@ std::vector<Image> read(int num_data, std::string filename) {
       if(j == 0){
         out[i].label = std::stoi(val);
       }else{
-        out[i].data[j - 1] = std::stoi(val);
+        out[i].data[j - 1] = std::stoi(val) / 255.0;
       }
     }
 

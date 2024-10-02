@@ -44,8 +44,7 @@ public:
 
   void backward(const Eigen::MatrixXd &loss_gradient, double learning_rate);
 
-  void train(const Eigen::MatrixXd &input_batch, const Eigen::MatrixXd &labels,
-             double learning_rate, int epochs);
+  void train(const std::vector<Image> input_batch);
 
   double compute_loss(const Eigen::VectorXd &output,
                       const Eigen::MatrixXd &labels);
