@@ -10,7 +10,7 @@
 
 #### Video / Screenshots
 - Handwritten Digit Test
-    - Boxes Identification
+    - Boxes represent Network Result
         - [0][1][2][3][4]  
           [5][6][7][8][9]
     - Green bar represents Network Confidence in result
