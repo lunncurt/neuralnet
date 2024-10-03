@@ -15,16 +15,20 @@ struct Image {
 // testing
 class Network {
 private:
-  std::vector<Layer> layers;
+  double learning_rate = 0.01;
 
 public:
+  std::vector<Layer> layers;
+
   Network(const std::vector<int> &topology);
 
-  Eigen::VectorXd forward(const Eigen::VectorXd &input_data);
+  void forward(const Eigen::VectorXd &input_data);
 
-  void backward(const Eigen::MatrixXd &loss_gradient, double learning_rate);
+  double compute_loss(int &label);
 
-  void train(const std::vector<Image> input_batch);
+  void backprop(const Eigen::VectorXd &expected);
 
-  double compute_loss(const Eigen::VectorXd &output, int &label);
+  void train(const std::vector<Image> &input_batch);
+
+  void test(const std::vector<Image> &input_batch);
 };

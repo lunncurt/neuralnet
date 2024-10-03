@@ -6,27 +6,25 @@
 #include <vector>
 
 int main() {
-  std::string fname = "mnist_test.csv";
+  std::string training_data = "mnist_train.csv";
 
-  int amount = 5;
+  int training_amount = 60000;
+  std::vector<Image> training_batch = read(training_amount, training_data);
 
-  std::vector<Image> test = read(amount, fname);
-  std::vector<int> topology = {784, 200, 10};
+  std::vector<int> topology = {784, 275, 125, 10};
 
-  Network t(topology);
+  Network model(topology);
 
-  for (int i = 0; i < test.size(); i++) {
-    Eigen::VectorXd output = t.forward(test[i].data);
+  std::cout << "starting training" << std::endl;
+  model.train(training_batch);
 
-    for (int j = 0; j < 10; j++) {
-      std::cout << j << ": " << output[j] << std::endl;
-    }
-    std::cout << "expected: " << test[i].label << std::endl;
-    std::cout << "loss: " << t.compute_loss(output, test[i].label) << std::endl;
-    std::cout << std::endl;
-  }
+  std::string testing_data = "mnist_test.csv";
 
-  std::cout << std::endl;
+  int testing_amount = 5000;
+  std::vector<Image> testing_batch = read(testing_amount, testing_data);
+
+  std::cout << "starting testing" << std::endl;
+  model.test(testing_batch);
 
   return 0;
 }
