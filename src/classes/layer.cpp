@@ -37,9 +37,9 @@ Eigen::VectorXd Layer::forward(const Eigen::VectorXd &input) {
   // Apply each layers respective activation function
   if (layer_type == 'h') {
     // ReLU
-    // output = relu(wsum);
+    output = relu(wsum);
     // Sigmoid
-    output = sigmoid(wsum);
+    // output = sigmoid(wsum);
 
   } else if (layer_type == 'o') {
     // Softmax
@@ -54,9 +54,9 @@ Eigen::VectorXd Layer::backward(const Eigen::MatrixXd &nlayer_weights,
                                 const Eigen::VectorXd &nlayer_gradients) {
   // Step 1: Compute the gradient of the activation function
   // ReLu
-  // Eigen::VectorXd activation_grad = relu_derivative(output);
+  Eigen::VectorXd activation_grad = relu_derivative(output);
   // Sigmoid
-  Eigen::VectorXd activation_grad = sigmoid_derivative(output);
+  // Eigen::VectorXd activation_grad = sigmoid_derivative(output);
 
   // Step 2: Compute the error signal for this layer (chain rule)
   Eigen::VectorXd delta = (nlayer_weights.transpose() * nlayer_gradients);
@@ -65,7 +65,7 @@ Eigen::VectorXd Layer::backward(const Eigen::MatrixXd &nlayer_weights,
   // Step 3: Calculate the gradient for the weights
   g_weights = delta * input.transpose();
 
-  // Step 4: Update biases (simply the delta)
+  // Step 4: Update biases 
   biases -= delta;
 
   return delta;

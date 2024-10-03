@@ -20,6 +20,7 @@ private:
 public:
   std::vector<Layer> layers;
 
+  Network() = default;
   Network(const std::vector<int> &topology);
 
   void forward(const Eigen::VectorXd &input_data);

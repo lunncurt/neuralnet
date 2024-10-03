@@ -9,3 +9,9 @@ std::vector<Image> read(int num_data, std::string filename);
 
 // Check if a file exists
 bool fileExists(const std::string& filename);
+
+float calculateIntensity(float distance);
+
+void window(Network &network);
+
+void runner();
