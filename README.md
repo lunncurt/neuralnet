@@ -6,15 +6,15 @@
 #### Features
 - Achieved a 93% accuracy achieved with 2 hidden layers (275 and 125 neurons) and ReLu for activation
 - Supports both Sigmoid and ReLu activation functions (change in source files to implement)
-- **Users can test their own handwritten digits (see below)**
+- ***Users can test their own handwritten digits (see below)***
 
 #### Video / Screenshots
 - Handwritten Digit Test
     - Boxes Identification
         - [0][1][2][3][4]  
           [5][6][7][8][9]
-    - Green bar represents Network Confidence in drawing
-        - 0 - 100%
+    - Green bar represents Network Confidence in result
+        - 0 - 100%  
 ![Digit Recognition](media/digit_recognize.gif)
 - Example CLI output/testing
 ![CLI Output](media/neuralnet_output.jpg)
