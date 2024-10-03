@@ -1,10 +1,10 @@
-# neuralnet
-### Work In Progress
-First attempt at a neural network implementation from scratch.
-Goal is to train on mnist dataset, and implement a rudementary gui so users can draw/test their own digits.
+# neuralnet (Work in Progress)
+#### First attempt at a neural network implementation with:
+- MNIST dataset for training/testing
+- Using only Eigen for Matrix operations and SFML for graphical output
+- Add feature for users to draw/test created digits
+
 #### Currently
-- Fully working implementation that can achieve a ~93% accuracy
-##### Working On
-- Save/load model from .txt or .csv file
-- GUI interface for user to load existing model or train froms scratch
-- After basic GUI is done, implement user drawing/testing own digits
+- Fully working implementation that can achieve a 93% accuracy
+#### Working On
+- Implementing feature for users to draw their own digit and test against the network
