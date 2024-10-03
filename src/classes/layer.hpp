@@ -25,6 +25,17 @@ public:
     return (x.array() > 0).cast<double>();
   }
 
+  // Sigmoid activation function 
+  Eigen::VectorXd sigmoid(const Eigen::VectorXd &x) {
+    return 1.0 / (1.0 + (-x.array()).exp());
+  }
+
+  // Sigmoid derivative function for backprop
+  Eigen::VectorXd sigmoid_derivative(const Eigen::VectorXd &x) {
+    Eigen::VectorXd s = sigmoid(x);
+    return s.array() * (1 - s.array());
+  }
+
   // Forward Pass: Layer output
   Eigen::VectorXd forward(const Eigen::VectorXd &input);
 

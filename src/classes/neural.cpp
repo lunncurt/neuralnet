@@ -1,9 +1,13 @@
 #include "neural.hpp"
+#include "utils.hpp"
 
 #include <Eigen/Dense>
 #include <chrono>
 #include <cmath>
+#include <fstream>
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 #include <vector>
 
 Network::Network(const std::vector<int> &topology) {
@@ -100,7 +104,119 @@ void Network::test(const std::vector<Image> &input_batch) {
       success_count++;
   }
 
-  double result = (static_cast<double>(success_count) / input_batch.size()) * 100;
+  double result =
+      (static_cast<double>(success_count) / input_batch.size()) * 100;
 
-  std::cout << "Success rating: " << result << "%";
+  std::cout << "Success rating: " << result << "%" << std::endl;
+}
+
+std::string Network::network_data() {
+  std::ostringstream data;
+
+  // Topology;
+  data << "topology\n";
+
+  data << layers[0].input.size() << " ";
+  for (const auto &layer : layers) {
+    data << layer.output.size();
+    if (layer.layer_type != 'o') {
+      data << " ";
+    } else {
+      data << "\n";
+    }
+  }
+
+  // Weights
+  data << "weights\n";
+
+  for (const auto &layer : layers) {
+    for (int i = 0; i < layer.weights.rows(); i++) {
+      for (int j = 0; j < layer.weights.cols(); j++) {
+        data << layer.weights(i, j);
+        if (j <= layer.weights.cols() - 1) {
+          data << " ";
+        }
+      }
+    }
+    data << "\n";
+  }
+
+  // Biases
+  data << "biases\n";
+
+  for (const auto &layer : layers) {
+    for (const auto &bias : layer.biases) {
+      data << bias;
+      if (bias != layer.biases[layer.biases.size() - 1]) {
+        data << " ";
+      }
+    }
+    data << "\n";
+  }
+
+  return data.str();
+}
+
+void Network::save() {
+  std::string save_file = "../../src/saved_models/model.txt";
+
+  std::ofstream outfile(save_file);
+
+  outfile << network_data();
+
+  outfile.close();
+}
+
+void Network::load() {
+  std::string load_file = "../../src/saved_models/model.txt";
+
+  if (!fileExists(load_file)) {
+    throw std::invalid_argument("file does not exist");
+  }
+
+  std::ifstream in(load_file);
+
+  std::string line;
+
+  while (getline(in, line)) {
+    if (line == "topology") {
+      getline(in, line);
+      std::istringstream iss(line);
+      std::vector<int> topology;
+      topology.clear();
+      int val;
+      while (iss >> val) {
+        topology.push_back(val);
+      }
+
+      Network temp(topology);
+      this->layers = temp.layers;
+
+    } else if (line == "weights") {
+      for (auto &layer : layers) {
+        getline(in, line);
+        std::istringstream iss(line);
+        for (int i = 0; i < layer.weights.rows(); i++) {
+          for (int j = 0; j < layer.weights.cols(); j++) {
+            double val;
+            iss >> val;
+
+            layer.weights(i, j) = val;
+          }
+        }
+      }
+    } else if (line == "biases") {
+      for (auto &layer : layers) {
+        getline(in, line);
+        std::istringstream iss(line);
+        for (int i = 0; i < layer.biases.size(); i++) {
+          double val;
+          iss >> val;
+          layer.biases[i] = val;
+        }
+      }
+    }
+  }
+
+  in.close();
 }

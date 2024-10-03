@@ -23,12 +23,15 @@ public:
   Network(const std::vector<int> &topology);
 
   void forward(const Eigen::VectorXd &input_data);
+  void backprop(const Eigen::VectorXd &expected);
 
   double compute_loss(int &label);
 
-  void backprop(const Eigen::VectorXd &expected);
-
   void train(const std::vector<Image> &input_batch);
-
   void test(const std::vector<Image> &input_batch);
+
+  std::string network_data();
+
+  void save();
+  void load();
 };
