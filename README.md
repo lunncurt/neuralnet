@@ -1,10 +1,20 @@
-# neuralnet (Work in Progress)
+# neuralnet
 #### First attempt at a neural network implementation with:
 - MNIST dataset for training/testing
 - Using only Eigen for Matrix operations and SFML for graphical output
-- Add feature for users to draw/test created digits
 
-#### Currently
-- Fully working implementation that can achieve a 93% accuracy
-#### Working On
-- Implementing feature for users to draw their own digit and test against the network
+#### Features
+- Achieved a 93% accuracy achieved with 2 hidden layers (275 and 125 neurons) and ReLu for activation
+- Supports both Sigmoid and ReLu activation functions (change in source files to implement)
+- **Users can test their own handwritten digits (see below)**
+
+#### Video / Screenshots
+- Handwritten Digit Test
+    - Boxes Identification
+        - [0][1][2][3][4]  
+          [5][6][7][8][9]
+    - Green bar represents Network Confidence in drawing
+        - 0 - 100%
+![Digit Recognition](media/digit_recognize.gif)
+- Example CLI output/testing
+![CLI Output](media/neuralnet_output.jpg)
