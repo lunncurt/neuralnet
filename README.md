@@ -1,5 +1,5 @@
 # neuralnet
-#### First attempt at a neural network implementation with:
+#### First attempt at a neural network implementation
 - MNIST dataset for training/testing
 - Using only Eigen for Matrix operations and SFML for graphical output
 
@@ -10,11 +10,6 @@
 
 #### Video / Screenshots
 - Handwritten Digit Test
-    - Boxes represent Network Result
-        - [0][1][2][3][4]  
-          [5][6][7][8][9]
-    - Green bar represents Network Confidence in result
-        - 0 - 100%  
-![Digit Recognition](media/digit_recognize.gif)
+![Digit Recognition](media/digit_rec.gif)
 - Example CLI output/testing
 ![CLI Output](media/neuralnet_output.jpg)
