@@ -78,8 +78,21 @@ void window(Network &network) {
   double confidence_rating = 0.0;
   int guess = -1;
 
-  // Create rectangles for displaying guess
+  // Create rectangles and text for displaying guess
   std::vector<sf::RectangleShape> guessRects;
+  std::vector<sf::Text> guessTexts;
+  sf::Font font;
+  if (!font.loadFromFile("../../media/dogica.ttf")) {
+
+    std::cout << "Error loading font" << std::endl;
+    return;
+  }
+
+  sf::Text guessText("Guess:", font, 12);
+  guessText.setPosition(DRAWING_SIZE + 10, 30);
+  guessText.setFillColor(sf::Color::White);
+
+  // Create rectangles for displaying guess
   for (int i = 0; i < 10; ++i) {
     sf::RectangleShape rect(sf::Vector2f(20, 20));
     rect.setPosition(DRAWING_SIZE + 10 + (i % 5) * 30, 50 + (i / 5) * 30);
@@ -87,11 +100,16 @@ void window(Network &network) {
     rect.setOutlineColor(sf::Color::Red);
     rect.setOutlineThickness(1);
     guessRects.push_back(rect);
+
+    sf::Text text(std::to_string(i), font, 12);
+    text.setPosition(DRAWING_SIZE + 15 + (i % 5) * 30, 52 + (i / 5) * 30);
+    text.setFillColor(sf::Color::Black);
+    guessTexts.push_back(text);
   }
 
   // Create rectangle for confidence bar
   sf::RectangleShape confidenceBar(sf::Vector2f(180, 20));
-  confidenceBar.setPosition(DRAWING_SIZE + 10, 120);
+  confidenceBar.setPosition(DRAWING_SIZE + 10, 150);
   confidenceBar.setFillColor(sf::Color::Green);
 
   // Create border for drawing area
@@ -102,10 +120,15 @@ void window(Network &network) {
 
   // Create border for confidence bar
   sf::RectangleShape confidenceBorder(sf::Vector2f(184, 24));
-  confidenceBorder.setPosition(DRAWING_SIZE + 8, 118);
+  confidenceBorder.setPosition(DRAWING_SIZE + 8, 148);
   confidenceBorder.setFillColor(sf::Color::Transparent);
   confidenceBorder.setOutlineColor(sf::Color::White);
   confidenceBorder.setOutlineThickness(2);
+
+  // Confidence text
+  sf::Text confidenceText("Confidence: 0%", font, 12);
+  confidenceText.setPosition(DRAWING_SIZE + 10, 125);
+  confidenceText.setFillColor(sf::Color::White);
 
   while (window.isOpen()) {
     sf::Event event;
@@ -180,6 +203,10 @@ void window(Network &network) {
           break;
         }
       }
+
+      confidenceText.setString(
+          "Confidence: " +
+          std::to_string(static_cast<int>(confidence_rating * 100)) + "%");
     }
 
     window.clear(sf::Color::Black);
@@ -203,11 +230,14 @@ void window(Network &network) {
       guessRects[i].setFillColor(i == guess ? sf::Color::Red
                                             : sf::Color::White);
       window.draw(guessRects[i]);
+      window.draw(guessTexts[i]);
     }
+    window.draw(guessText);
 
-    // Draw confidence bar
+    // Draw confidence bar and text
     confidenceBar.setSize(sf::Vector2f(180 * confidence_rating, 20));
     window.draw(confidenceBar);
+    window.draw(confidenceText);
 
     window.display();
   }
