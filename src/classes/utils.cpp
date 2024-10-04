@@ -324,6 +324,7 @@ void runner() {
       std::cout << std::endl;
 
       if (test_response == 1) {
+        std::cout << "Press 'c' to clear window, 'q' to quit" << std::endl;
         std::cout << "Starting window" << std::endl;
 
         window(model);
