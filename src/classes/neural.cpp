@@ -70,19 +70,27 @@ void Network::backprop(const Eigen::VectorXd &expected) {
   }
 }
 
-void Network::train(const std::vector<Image> &input_batch) {
+void Network::train(const std::vector<Image> &input_batch, const int epochs) {
   // Init clock to determing training time
   auto start = std::chrono::high_resolution_clock::now();
 
   // Loop through input batch and compute forward pass result(1), backprop
   // result and update(2)
-  for (int i = 0; i < input_batch.size(); i++) {
-    forward(input_batch[i].data);
 
-    Eigen::VectorXd expected = Eigen::VectorXd::Zero(10);
-    expected[input_batch[i].label] = 1;
+  for (int i = 0; i < epochs; i++) {
+    std::cout << "Starting epoch " << i + 1 << std::endl;
+    if (i > 0) {
+      this->learning_rate *= .1 * i;
+    }
 
-    backprop(expected);
+    for (int j = 0; j < input_batch.size(); j++) {
+      forward(input_batch[j].data);
+
+      Eigen::VectorXd expected = Eigen::VectorXd::Zero(10);
+      expected[input_batch[j].label] = 1;
+
+      backprop(expected);
+    }
   }
 
   // End clock

@@ -199,13 +199,13 @@ void window(Network &network) {
           break;
         }
       }
-
-      confidenceText.setString(
-          "Confidence: " +
-          std::to_string(static_cast<int>(confidence_rating * 100)) + "%");
     }
 
     window.clear(sf::Color::Black);
+
+    confidenceText.setString(
+        "Confidence: " +
+        std::to_string(static_cast<int>(confidence_rating * 100)) + "%");
 
     // Draw the grid
     for (int y = 0; y < grid_size; ++y) {
@@ -282,6 +282,15 @@ void runner() {
 
     model.layers = temp.layers;
 
+    std::cout << "How many epochs would you like to run (answer must be >= 1): ";
+    int epoch_num;
+    std::cin >> epoch_num;
+
+    if (epoch_num < 1) {
+      throw std::invalid_argument(
+          "answer must be greater than 0");
+    }
+
     std::cout << "How many images would you like to train on (answer must be "
                  "<= 60000): ";
     int img_amount;
@@ -293,13 +302,14 @@ void runner() {
           "answer must be greater than 0 and less than 60000");
     }
 
+
     std::cout << "Loading training batch" << std::endl;
     std::string training_data = "../../mnist_train.csv";
     std::vector<Image> training_batch = read(img_amount, training_data);
     std::cout << "Success" << std::endl;
 
     std::cout << "Starting training" << std::endl;
-    model.train(training_batch);
+    model.train(training_batch, epoch_num);
   } else {
     std::cout << "Well that wasn't very nice" << std::endl;
     return;

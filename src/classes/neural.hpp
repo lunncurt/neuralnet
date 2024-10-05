@@ -35,7 +35,7 @@ public:
   double compute_loss(const int &label);
 
   // Runner to train network on given batch
-  void train(const std::vector<Image> &input_batch);
+  void train(const std::vector<Image> &input_batch, const int epochs);
   // Runner to test network on given batch
   void test(const std::vector<Image> &input_batch);
 
