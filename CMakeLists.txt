@@ -17,4 +17,4 @@ include_directories(${SFML_INCLUDE_DIRECTORIES})
 find_package(Eigen3 REQUIRED)
 target_include_directories(out PUBLIC ${EIGEN3_INCLUDE_DIRS})
 
-target_link_libraries(out sfml-system sfml-graphics sfml-window)
+target_link_libraries(out sfml-graphics)

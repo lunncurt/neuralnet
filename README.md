@@ -1,5 +1,5 @@
 # neuralnet
-#### First attempt at a neural network implementation
+#### First attempt at a neural network implementation from scratch
 - MNIST dataset for training/testing
 - Using only Eigen for Matrix operations and SFML for graphical output
 
@@ -12,4 +12,4 @@
 - Handwritten Digit Test
 ![Digit Recognition](media/digit_rec.gif)
 - Example CLI output/testing
-![CLI Output](media/neuralnet_output.jpg)
+![CLI Output](media/example.png)
