@@ -11,7 +11,7 @@ set(SOURCE_FILES
 
 add_executable(out ${SOURCE_FILES})
 
-find_package(SFML 2.6.1 COMPONENTS graphics system window REQUIRED)
+find_package(SFML 2.6.1 COMPONENTS graphics REQUIRED)
 include_directories(${SFML_INCLUDE_DIRECTORIES})
 
 find_package(Eigen3 REQUIRED)
