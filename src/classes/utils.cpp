@@ -9,16 +9,6 @@
 #include <stdexcept>
 #include <string>
 
-const int grid_size = 28;
-const int cell_size = 20;
-
-const int DRAWING_SIZE = grid_size * cell_size;
-const int INFO_WIDTH = 200;
-const int WINDOW_WIDTH = DRAWING_SIZE + INFO_WIDTH;
-const int WINDOW_HEIGHT = DRAWING_SIZE;
-// Maximum distance for intensity calculation
-const float MAX_DISTANCE = 3.0f;
-
 std::vector<Image> read(int num_data, std::string filename) {
   std::vector<Image> out(num_data);
 
@@ -54,10 +44,15 @@ std::vector<Image> read(int num_data, std::string filename) {
   return out;
 }
 
-bool fileExists(const std::string &filename) {
-  std::ifstream ip(filename);
-  return ip.is_open();
-}
+const int grid_size = 28;
+const int cell_size = 20;
+
+const int DRAWING_SIZE = grid_size * cell_size;
+const int INFO_WIDTH = 200;
+const int WINDOW_WIDTH = DRAWING_SIZE + INFO_WIDTH;
+const int WINDOW_HEIGHT = DRAWING_SIZE;
+// Maximum distance for intensity calculation
+const float MAX_DISTANCE = 3.0f;
 
 float calculateIntensity(float distance) {
   if (distance > MAX_DISTANCE)
@@ -66,6 +61,7 @@ float calculateIntensity(float distance) {
 }
 
 void window(Network &network) {
+
   sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
                           "Handwritten Digit Recognition");
 
@@ -286,10 +282,16 @@ void runner() {
 
     model.layers = temp.layers;
 
-    std::cout << "How many images would you like to train on: ";
+    std::cout << "How many images would you like to train on (answer must be "
+                 "<= 60000): ";
     int img_amount;
     std::cin >> img_amount;
     std::cout << std::endl;
+
+    if (img_amount > 60000 || img_amount < 1) {
+      throw std::invalid_argument(
+          "answer must be greater than 0 and less than 60000");
+    }
 
     std::cout << "Loading training batch" << std::endl;
     std::string training_data = "../../mnist_train.csv";
@@ -329,13 +331,17 @@ void runner() {
 
         window(model);
       } else if (test_response == 2) {
-        std::cout << "How many images would you like to test on: ";
+        std::cout << "How many images would you like to test on (answer must "
+                     "be <= 10000): ";
         int test_amount;
         std::cin >> test_amount;
         std::cout << std::endl;
 
         if (test_amount < 1) {
           std::cout << "Response must be >= 1" << std::endl;
+          continue;
+        } else if (test_amount > 10000) {
+          std::cout << "Response must be <= 60000" << std::endl;
           continue;
         }
 

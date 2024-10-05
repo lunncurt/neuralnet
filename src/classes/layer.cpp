@@ -55,6 +55,7 @@ Eigen::VectorXd Layer::backward(const Eigen::MatrixXd &nlayer_weights,
   // Step 1: Compute the gradient of the activation function
   // ReLu
   Eigen::VectorXd activation_grad = relu_derivative(output);
+
   // Sigmoid
   // Eigen::VectorXd activation_grad = sigmoid_derivative(output);
 

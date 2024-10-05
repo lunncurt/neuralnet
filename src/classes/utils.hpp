@@ -7,11 +7,11 @@
 // Read data from the mnist datasets
 std::vector<Image> read(int num_data, std::string filename);
 
-// Check if a file exists
-bool fileExists(const std::string& filename);
-
+// Uses distance to calcualte 'intensity' for square colors
 float calculateIntensity(float distance);
 
+// Window runner that allows users to test handwritten digits
 void window(Network &network);
 
+// Main runner
 void runner();

@@ -2,6 +2,7 @@
 
 #include <Eigen/Dense>
 
+// Layer class to hold a given layers data and necessary functions
 class Layer {
 public:
   Eigen::MatrixXd weights;

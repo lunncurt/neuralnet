@@ -1,10 +1,10 @@
 #include "neural.hpp"
-#include "utils.hpp"
 
 #include <Eigen/Dense>
 #include <chrono>
 #include <cmath>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -31,7 +31,7 @@ void Network::forward(const Eigen::VectorXd &input_data) {
   }
 }
 
-double Network::compute_loss(int &label) {
+double Network::compute_loss(const int &label) {
   Eigen::VectorXd expected = Eigen::VectorXd::Zero(10);
   expected[label] = 1;
 
@@ -47,7 +47,7 @@ double Network::compute_loss(int &label) {
 }
 
 void Network::backprop(const Eigen::VectorXd &expected) {
-  // Step 1: Compute the error at the output layer
+  // Compute the error at the output layer
   Layer &output_layer = layers.back();
   Eigen::VectorXd output_error = output_layer.output - expected;
 
@@ -55,25 +55,27 @@ void Network::backprop(const Eigen::VectorXd &expected) {
   // output_layer.g_weights = output_layer.input * output_gradients.transpose();
   output_layer.g_weights = output_gradients * output_layer.input.transpose();
 
-  // Step 2: Backpropagate through each layer
   Eigen::VectorXd gradients = output_error;
   Eigen::MatrixXd weights = output_layer.weights;
 
-  // Step 3: Start from the last hidden layer and go backward
+  // Start from the last hidden layer and go backward
   for (int i = layers.size() - 2; i >= 0; --i) {
     gradients = layers[i].backward(weights, gradients);
     weights = layers[i].weights;
   }
 
-  // Step 4: Update weights in all layers
+  // Update weights in all layers
   for (Layer &layer : layers) {
     layer.weights -= learning_rate * layer.g_weights;
   }
 }
 
 void Network::train(const std::vector<Image> &input_batch) {
+  // Init clock to determing training time
   auto start = std::chrono::high_resolution_clock::now();
 
+  // Loop through input batch and compute forward pass result(1), backprop
+  // result and update(2)
   for (int i = 0; i < input_batch.size(); i++) {
     forward(input_batch[i].data);
 
@@ -83,20 +85,41 @@ void Network::train(const std::vector<Image> &input_batch) {
     backprop(expected);
   }
 
+  // End clock
   auto end = std::chrono::high_resolution_clock::now();
 
   std::chrono::duration<double> duration = end - start;
 
-  std::cout << "Ran " << input_batch.size() << " passes in " << duration.count()
-            << " seconds" << std::endl;
+  // Display time taken and num of images tested on
+  int mins = duration.count() / 60.0;
+  double seconds = std::fmod(duration.count(), 60);
+
+  if (mins > 0 && mins < 2) {
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Ran " << input_batch.size() << " passes in " << mins
+              << " minute and " << seconds << " seconds" << std::endl;
+  } else if (mins >= 2) {
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Ran " << input_batch.size() << " passes in " << mins
+              << " minutes and " << seconds << " seconds" << std::endl;
+  } else {
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Ran " << input_batch.size() << " passes in " << seconds
+              << " seconds" << std::endl;
+  }
 }
 
 void Network::test(const std::vector<Image> &input_batch) {
   int success_count = 0;
   int answer_index;
 
+  double loss_total;
+
+  // Determine if forward pass was a success/compute loss
   for (int i = 0; i < input_batch.size(); i++) {
     forward(input_batch[i].data);
+
+    loss_total += compute_loss(input_batch[i].label);
 
     layers.back().output.maxCoeff(&answer_index);
 
@@ -104,10 +127,13 @@ void Network::test(const std::vector<Image> &input_batch) {
       success_count++;
   }
 
+  // Convert accuracy to a percentage
   double result =
       (static_cast<double>(success_count) / input_batch.size()) * 100;
 
-  std::cout << "Success rating: " << result << "%" << std::endl;
+  std::cout << "Accuracy: " << result << "%" << std::endl;
+  std::cout << std::fixed << std::setprecision(2);
+  std::cout << "Average loss: " << loss_total / input_batch.size() << std::endl;
 }
 
 std::string Network::network_data() {
@@ -168,13 +194,14 @@ void Network::save() {
 }
 
 void Network::load() {
+  // Can alter to change models
   std::string load_file = "../../src/saved_models/model.txt";
 
-  if (!fileExists(load_file)) {
+  std::ifstream in(load_file);
+
+  if (!in.is_open()) {
     throw std::invalid_argument("file does not exist");
   }
-
-  std::ifstream in(load_file);
 
   std::string line;
 
