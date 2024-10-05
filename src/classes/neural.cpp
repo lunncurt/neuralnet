@@ -78,7 +78,6 @@ void Network::train(const std::vector<Image> &input_batch, const int epochs) {
   // result and update(2)
 
   for (int i = 0; i < epochs; i++) {
-    std::cout << "Starting epoch " << i + 1 << std::endl;
     if (i > 0) {
       this->learning_rate *= .1 * i;
     }
@@ -91,6 +90,8 @@ void Network::train(const std::vector<Image> &input_batch, const int epochs) {
 
       backprop(expected);
     }
+
+    std::cout << "Epoch " << i + 1 << " completed" << std::endl;
   }
 
   // End clock
@@ -101,18 +102,19 @@ void Network::train(const std::vector<Image> &input_batch, const int epochs) {
   // Display time taken and num of images tested on
   int mins = duration.count() / 60.0;
   double seconds = std::fmod(duration.count(), 60);
+  int pass_amount = input_batch.size() * epochs;
 
   if (mins > 0 && mins < 2) {
     std::cout << std::fixed << std::setprecision(2);
-    std::cout << "Ran " << input_batch.size() << " passes in " << mins
+    std::cout << "Ran " << pass_amount << " passes in " << mins
               << " minute and " << seconds << " seconds" << std::endl;
   } else if (mins >= 2) {
     std::cout << std::fixed << std::setprecision(2);
-    std::cout << "Ran " << input_batch.size() << " passes in " << mins
+    std::cout << "Ran " << epochs << " passes in " << mins
               << " minutes and " << seconds << " seconds" << std::endl;
   } else {
     std::cout << std::fixed << std::setprecision(2);
-    std::cout << "Ran " << input_batch.size() << " passes in " << seconds
+    std::cout << "Ran " << pass_amount << " passes in " << seconds
               << " seconds" << std::endl;
   }
 }
