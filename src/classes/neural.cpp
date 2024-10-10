@@ -104,18 +104,16 @@ void Network::train(const std::vector<Image> &input_batch, const int epochs) {
   double seconds = std::fmod(duration.count(), 60);
   int pass_amount = input_batch.size() * epochs;
 
+  std::cout << std::fixed << std::setprecision(2);
   if (mins > 0 && mins < 2) {
-    std::cout << std::fixed << std::setprecision(2);
     std::cout << "Ran " << pass_amount << " passes in " << mins
               << " minute and " << seconds << " seconds" << std::endl;
   } else if (mins >= 2) {
-    std::cout << std::fixed << std::setprecision(2);
-    std::cout << "Ran " << epochs << " passes in " << mins
-              << " minutes and " << seconds << " seconds" << std::endl;
+    std::cout << "Ran " << epochs << " passes in " << mins << " minutes and "
+              << seconds << " seconds" << std::endl;
   } else {
-    std::cout << std::fixed << std::setprecision(2);
-    std::cout << "Ran " << pass_amount << " passes in " << seconds
-              << " seconds" << std::endl;
+    std::cout << "Ran " << pass_amount * input_batch.size() << " passes in "
+              << seconds << " seconds" << std::endl;
   }
 }
 
