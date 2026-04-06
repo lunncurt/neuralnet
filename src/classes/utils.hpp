@@ -2,10 +2,11 @@
 
 #include "neural.hpp"
 #include <SFML/Graphics.hpp>
+#include <filesystem>
 #include <vector>
 
 // Read data from the mnist datasets
-std::vector<Image> read(int num_data, std::string filename);
+std::vector<Image> read(int num_data, const std::filesystem::path &filename);
 
 // Uses distance to calcualte 'intensity' for square colors
 float calculateIntensity(float distance);

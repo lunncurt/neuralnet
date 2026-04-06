@@ -1,4 +1,5 @@
 #include "neural.hpp"
+#include "project_paths.hpp"
 
 #include <Eigen/Dense>
 #include <chrono>
@@ -121,7 +122,7 @@ void Network::test(const std::vector<Image> &input_batch) {
   int success_count = 0;
   int answer_index;
 
-  double loss_total;
+  double loss_total = 0.0;
 
   // Determine if forward pass was a success/compute loss
   for (int i = 0; i < input_batch.size(); i++) {
@@ -192,7 +193,7 @@ std::string Network::network_data() {
 }
 
 void Network::save() {
-  std::string save_file = "../../src/saved_models/model.txt";
+  const auto save_file = project_path({"src", "saved_models", "model.txt"});
 
   std::ofstream outfile(save_file);
 
@@ -203,7 +204,7 @@ void Network::save() {
 
 void Network::load() {
   // Can alter to change models
-  std::string load_file = "../../src/saved_models/model.txt";
+  const auto load_file = project_path({"src", "saved_models", "model.txt"});
 
   std::ifstream in(load_file);
 

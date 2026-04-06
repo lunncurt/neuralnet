@@ -1,15 +1,33 @@
 #include "utils.hpp"
 #include "neural.hpp"
+#include "project_paths.hpp"
 
 #include <Eigen/Dense>
 #include <SFML/Graphics.hpp>
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 
-std::vector<Image> read(int num_data, std::string filename) {
+namespace {
+
+bool load_font(sf::Font &font, const std::filesystem::path &path) {
+#if SFML_VERSION_MAJOR >= 3
+  return font.openFromFile(path);
+#else
+  return font.loadFromFile(path.string());
+#endif
+}
+
+} // namespace
+
+std::vector<Image> read(int num_data, const std::filesystem::path &filename) {
   std::vector<Image> out(num_data);
 
   std::ifstream ip(filename);
@@ -61,9 +79,14 @@ float calculateIntensity(float distance) {
 }
 
 void window(Network &network) {
-
+#if SFML_VERSION_MAJOR >= 3
+  sf::RenderWindow window(
+      sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}),
+      "Handwritten Digit Recognition");
+#else
   sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
                           "Handwritten Digit Recognition");
+#endif
 
   std::vector<std::vector<float>> grid(grid_size,
                                        std::vector<float>(grid_size, 0.0f));
@@ -78,55 +101,113 @@ void window(Network &network) {
   std::vector<sf::RectangleShape> guessRects;
   std::vector<sf::Text> guessTexts;
   sf::Font font;
-  if (!font.loadFromFile("../../media/dogica.ttf")) {
+  const auto font_path = project_path({"media", "dogica.ttf"});
+  if (!load_font(font, font_path)) {
 
-    std::cout << "Error loading font" << std::endl;
+    std::cout << "Error loading font: " << font_path << std::endl;
     return;
   }
 
-  sf::Text guessText("Guess:", font, 12);
-  guessText.setPosition(DRAWING_SIZE + 10, 30);
+  sf::Text guessText(font);
+  guessText.setString("Guess:");
+  guessText.setCharacterSize(12);
+  guessText.setPosition(
+      {static_cast<float>(DRAWING_SIZE + 10), 30.0f});
   guessText.setFillColor(sf::Color::White);
 
   // Create rectangles for displaying guess
   for (int i = 0; i < 10; ++i) {
-    sf::RectangleShape rect(sf::Vector2f(20, 20));
-    rect.setPosition(DRAWING_SIZE + 10 + (i % 5) * 30, 50 + (i / 5) * 30);
+    sf::RectangleShape rect({20.0f, 20.0f});
+    rect.setPosition(
+        {static_cast<float>(DRAWING_SIZE + 10 + (i % 5) * 30),
+         static_cast<float>(50 + (i / 5) * 30)});
     rect.setFillColor(sf::Color::White);
     rect.setOutlineColor(sf::Color::Red);
     rect.setOutlineThickness(1);
     guessRects.push_back(rect);
 
-    sf::Text text(std::to_string(i), font, 12);
-    text.setPosition(DRAWING_SIZE + 15 + (i % 5) * 30, 52 + (i / 5) * 30);
+    sf::Text text(font);
+    text.setString(std::to_string(i));
+    text.setCharacterSize(12);
+    text.setPosition(
+        {static_cast<float>(DRAWING_SIZE + 15 + (i % 5) * 30),
+         static_cast<float>(52 + (i / 5) * 30)});
     text.setFillColor(sf::Color::Black);
     guessTexts.push_back(text);
   }
 
   // Create rectangle for confidence bar
-  sf::RectangleShape confidenceBar(sf::Vector2f(180, 20));
-  confidenceBar.setPosition(DRAWING_SIZE + 10, 150);
+  sf::RectangleShape confidenceBar({180.0f, 20.0f});
+  confidenceBar.setPosition(
+      {static_cast<float>(DRAWING_SIZE + 10), 150.0f});
   confidenceBar.setFillColor(sf::Color::Green);
 
   // Create border for drawing area
-  sf::RectangleShape drawingBorder(sf::Vector2f(DRAWING_SIZE, DRAWING_SIZE));
+  sf::RectangleShape drawingBorder(
+      {static_cast<float>(DRAWING_SIZE), static_cast<float>(DRAWING_SIZE)});
   drawingBorder.setFillColor(sf::Color::Transparent);
   drawingBorder.setOutlineColor(sf::Color::White);
   drawingBorder.setOutlineThickness(2);
 
   // Create border for confidence bar
-  sf::RectangleShape confidenceBorder(sf::Vector2f(184, 24));
-  confidenceBorder.setPosition(DRAWING_SIZE + 8, 148);
+  sf::RectangleShape confidenceBorder({184.0f, 24.0f});
+  confidenceBorder.setPosition(
+      {static_cast<float>(DRAWING_SIZE + 8), 148.0f});
   confidenceBorder.setFillColor(sf::Color::Transparent);
   confidenceBorder.setOutlineColor(sf::Color::White);
   confidenceBorder.setOutlineThickness(2);
 
   // Confidence text
-  sf::Text confidenceText("Confidence: 0%", font, 12);
-  confidenceText.setPosition(DRAWING_SIZE + 10, 125);
+  sf::Text confidenceText(font);
+  confidenceText.setString("Confidence: 0%");
+  confidenceText.setCharacterSize(12);
+  confidenceText.setPosition(
+      {static_cast<float>(DRAWING_SIZE + 10), 125.0f});
   confidenceText.setFillColor(sf::Color::White);
 
   while (window.isOpen()) {
+#if SFML_VERSION_MAJOR >= 3
+    while (const std::optional event = window.pollEvent()) {
+      if (event->is<sf::Event::Closed>()) {
+        window.close();
+        continue;
+      }
+
+      if (const auto *mouse_button_pressed =
+              event->getIf<sf::Event::MouseButtonPressed>()) {
+        if (mouse_button_pressed->button == sf::Mouse::Button::Left) {
+          isDrawing = true;
+        }
+        continue;
+      }
+
+      if (const auto *mouse_button_released =
+              event->getIf<sf::Event::MouseButtonReleased>()) {
+        if (mouse_button_released->button == sf::Mouse::Button::Left) {
+          isDrawing = false;
+        }
+        continue;
+      }
+
+      if (const auto *key_pressed = event->getIf<sf::Event::KeyPressed>()) {
+        switch (key_pressed->code) {
+        case sf::Keyboard::Key::C:
+          for (auto &row : grid) {
+            std::fill(row.begin(), row.end(), 0.0f);
+          }
+          confidence_rating = 0.0;
+          guess = -1;
+          break;
+        case sf::Keyboard::Key::Q:
+          window.close();
+          std::cout << "Program exited." << std::endl;
+          break;
+        default:
+          break;
+        }
+      }
+    }
+#else
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed)
@@ -158,6 +239,7 @@ void window(Network &network) {
         }
       }
     }
+#endif
 
     if (isDrawing) {
       sf::Vector2f mousePos =
@@ -210,8 +292,11 @@ void window(Network &network) {
     // Draw the grid
     for (int y = 0; y < grid_size; ++y) {
       for (int x = 0; x < grid_size; ++x) {
-        cell.setPosition(x * cell_size, y * cell_size);
-        sf::Uint8 colorValue = static_cast<sf::Uint8>(grid[y][x] * 255);
+        cell.setPosition(
+            {static_cast<float>(x * cell_size),
+             static_cast<float>(y * cell_size)});
+        std::uint8_t colorValue =
+            static_cast<std::uint8_t>(grid[y][x] * 255);
         cell.setFillColor(sf::Color(colorValue, colorValue, colorValue));
         window.draw(cell);
       }
@@ -231,7 +316,8 @@ void window(Network &network) {
     window.draw(guessText);
 
     // Draw confidence bar and text
-    confidenceBar.setSize(sf::Vector2f(180 * confidence_rating, 20));
+    confidenceBar.setSize(
+        {static_cast<float>(180 * confidence_rating), 20.0f});
     window.draw(confidenceBar);
     window.draw(confidenceText);
 
@@ -304,7 +390,7 @@ void runner() {
 
 
     std::cout << "Loading training batch" << std::endl;
-    std::string training_data = "../../mnist_train.csv";
+    const auto training_data = project_path({"mnist_train.csv"});
     std::vector<Image> training_batch = read(img_amount, training_data);
     std::cout << "Success" << std::endl;
 
@@ -355,7 +441,7 @@ void runner() {
           continue;
         }
 
-        std::string testing_data = "../../mnist_test.csv";
+        const auto testing_data = project_path({"mnist_test.csv"});
         std::vector<Image> testing_batch = read(test_amount, testing_data);
         std::cout << "Starting testing" << std::endl;
         model.test(testing_batch);

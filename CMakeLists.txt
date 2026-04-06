@@ -1,7 +1,5 @@
-cmake_minimum_required(VERSION 3.4)
-project(neuralnet)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
+cmake_minimum_required(VERSION 3.16...4.1)
+project(neuralnet LANGUAGES CXX)
 
 set(SOURCE_FILES
     src/main.cpp
@@ -11,10 +9,27 @@ set(SOURCE_FILES
 
 add_executable(out ${SOURCE_FILES})
 
-find_package(SFML 2.6.1 COMPONENTS graphics REQUIRED)
-include_directories(${SFML_INCLUDE_DIRECTORIES})
+target_compile_features(out PRIVATE cxx_std_20)
+set_target_properties(out PROPERTIES
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF)
+
+target_include_directories(out PRIVATE src)
+target_compile_definitions(out PRIVATE
+    NEURALNET_PROJECT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
 
 find_package(Eigen3 REQUIRED)
-target_include_directories(out PUBLIC ${EIGEN3_INCLUDE_DIRS})
+if(TARGET Eigen3::Eigen)
+    target_link_libraries(out PRIVATE Eigen3::Eigen)
+else()
+    target_include_directories(out PRIVATE ${EIGEN3_INCLUDE_DIRS})
+endif()
 
-target_link_libraries(out sfml-graphics)
+find_package(SFML 3 QUIET COMPONENTS Graphics CONFIG)
+if(SFML_FOUND)
+    target_link_libraries(out PRIVATE SFML::Graphics)
+else()
+    find_package(SFML 2.5 REQUIRED COMPONENTS graphics window system)
+    target_include_directories(out PRIVATE ${SFML_INCLUDE_DIRS})
+    target_link_libraries(out PRIVATE ${SFML_LIBRARIES})
+endif()

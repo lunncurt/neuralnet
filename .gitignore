@@ -1,0 +1,10 @@
+compile_commands.json
+out/
+.cache/
+.DS*
+build/
+build-*/
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake

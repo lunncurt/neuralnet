@@ -1,4 +1,5 @@
 #include "layer.hpp"
+#include <cassert>
 #include <random>
 
 Layer::Layer(int input_size, int output_size, const char type)
